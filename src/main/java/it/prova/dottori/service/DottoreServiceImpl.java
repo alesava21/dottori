@@ -50,4 +50,9 @@ public class DottoreServiceImpl implements DottoreService {
 
 	}
 
+	@Override
+	public Dottore cercaCodiceFiscale(String codiceFiscale) {
+		return dottoreRepository.findBycodFiscalePazienteAttualmenteInVisita(codiceFiscale);
+	}
+
 }
