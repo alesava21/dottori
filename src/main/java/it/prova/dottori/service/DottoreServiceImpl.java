@@ -3,6 +3,7 @@ package it.prova.dottori.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.AbstractAuditable_;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +54,18 @@ public class DottoreServiceImpl implements DottoreService {
 	@Override
 	public Dottore cercaCodiceFiscale(String codiceFiscale) {
 		return dottoreRepository.findBycodFiscalePazienteAttualmenteInVisita(codiceFiscale);
+	}
+
+	@Override
+	public Dottore verificaDisponibilita(String codiceDottore) {
+		return dottoreRepository.findBycodiceDottore(codiceDottore);
+	}
+
+	@Override
+	public Dottore impostaDottore(Dottore dottore) {
+		Dottore result = dottoreRepository.findBycodiceDottore(dottore.codiceDottore());
+		result.codFiscalePazienteAttualmenteInVisita(null);
+		return dottoreRepository.save(result);
 	}
 
 }

@@ -7,5 +7,7 @@ import it.prova.dottori.model.Dottore;
 public interface DottoreRepository extends CrudRepository<Dottore, Long>{
 	
 	Dottore findBycodFiscalePazienteAttualmenteInVisita(String codiceFiscale);
+	
+	Dottore findBycodiceDottore(String codiceDottore);
 
 }

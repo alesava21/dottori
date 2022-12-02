@@ -19,5 +19,9 @@ public List<Dottore> listAll();
 	public Dottore cercaCodiceFiscale(String codiceFiscale);
 	
 	public void rimuovi(Long idToRemove);
+	
+	public Dottore verificaDisponibilita(String codiceDottore);
+	
+	public Dottore impostaDottore(Dottore dottore);
 
 }
