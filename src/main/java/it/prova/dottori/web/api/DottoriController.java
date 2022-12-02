@@ -35,8 +35,8 @@ public class DottoriController {
 	}
 	
 	@GetMapping("/{cf}")
-	public DottoreDTO cercaPerCodiceFiscale(@PathVariable(required = true) String codiceFiscale) {
-		Dottore result = dottoreService.cercaCodiceFiscale(codiceFiscale);
+	public DottoreDTO cercaPerCodiceFiscale(@PathVariable(required = true) String cf) {
+		Dottore result = dottoreService.cercaPerCodiceFiscale(cf);
 		
 		if(result == null)
 			throw new DottoreNotFoundException("nessun dottore trovato che stia visitando questo paziente");
@@ -59,7 +59,7 @@ public class DottoriController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void update(@RequestBody DottoreDTO dottore) {
 		if(dottore.getId() == null)
-			throw new IdNotNullForInsertException("impossibile aggiornare un record se non si inserisce l'id");
+			throw new IdNullForUpdateException("impossibile aggiornare un record se non si inserisce l'id");
 		
 		dottoreService.aggiorna(dottore.buildDottoreModel());
 	}
@@ -75,17 +75,16 @@ public class DottoriController {
 		dottoreService.rimuovi(id);
 	}
 	
-	@GetMapping("/verificaDisponibilitaDottore/{codiceFiscale}")
-	public DottoreDTO assegnaPaziente (@PathVariable (required = true) String codiceDottore) {
-		Dottore result = dottoreService.verificaDisponibilita(codiceDottore);
+	@GetMapping("/verificaDisponibilitaDottore/{cd}")
+	public DottoreDTO assegnaPaziente(@PathVariable(required = true) String cd) {
+		Dottore result = dottoreService.verificaDisponibilita(cd);
 		
-		if (result == null) {
-			throw new DottoreNonDisponibileException("Il dottore non e disponbile in questo momento");	
-		}
+		if(result == null)
+			throw new DottoreNotFoundException("dottore non trovato");
 		
-		if (!result.inServizio() || result.inVisita()) {
-			throw new DottoreNonDisponibileException("Il dottore non e disponbile in questo momento");	
-		}
+		if(!result.isInServizio() || result.isInVisita())
+			throw new DottoreNonDisponibileEsception("dottore non disponibile");
+		
 		return DottoreDTO.buildDottoreDTOFromModel(result);
 	}
 	
