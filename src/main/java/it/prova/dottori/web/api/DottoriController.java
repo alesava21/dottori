@@ -25,85 +25,85 @@ import it.prova.dottori.web.api.exception.IdNotNullForInsertException;
 @RestController
 @RequestMapping("/api/dottore")
 public class DottoriController {
-	
+
 	@Autowired
 	private DottoreService dottoreService;
-	
+
 	@GetMapping
-	public List<DottoreDTO> listAll(){
+	public List<DottoreDTO> listAll() {
 		return DottoreDTO.createListDTOFromModel(dottoreService.listAll());
 	}
-	
+
 	@GetMapping("/{cf}")
-	public DottoreDTO cercaPerCodiceFiscale(@PathVariable(required = true) String cf) {
-		Dottore result = dottoreService.cercaPerCodiceFiscale(cf);
-		
-		if(result == null)
+	public DottoreDTO cercaPerCodiceFiscale(@PathVariable(required = true) String codiceFiscale) {
+		Dottore result = dottoreService.cercaCodiceFiscale(codiceFiscale);
+
+		if (result == null)
 			throw new DottoreNotFoundException("nessun dottore trovato che stia visitando questo paziente");
-			
+
 		return DottoreDTO.buildDottoreDTOFromModel(result);
 	}
-	
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public void inserisciDottore(@RequestBody DottoreDTO dottore) {
-		
-		if(dottore.getId() != null)
+
+		if (dottore.getId() != null)
 			throw new IdNotNullForInsertException("impossibile inserire un nuovo record se contenente id");
-		
+
 		dottoreService.inserisciNuovo(dottore.buildDottoreModel());
-		
+
 	}
-	
+
 	@PutMapping
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void update(@RequestBody DottoreDTO dottore) {
-		if(dottore.getId() == null)
-			throw new IdNullForUpdateException("impossibile aggiornare un record se non si inserisce l'id");
-		
+		if (dottore.getId() == null)
+			throw new IdNotNullForInsertException("impossibile aggiornare un record se non si inserisce l'id");
+
 		dottoreService.aggiorna(dottore.buildDottoreModel());
 	}
-	
+
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable(required = true) Long id) {
 		Dottore dottoreDaEliminare = dottoreService.caricaSingoloElemento(id);
-		
-		if(dottoreDaEliminare == null)
+
+		if (dottoreDaEliminare == null)
 			throw new DottoreNotFoundException("nessun dottore trovato");
-		
+
 		dottoreService.rimuovi(id);
 	}
-	
+
 	@GetMapping("/verificaDisponibilitaDottore/{cd}")
 	public DottoreDTO assegnaPaziente(@PathVariable(required = true) String cd) {
 		Dottore result = dottoreService.verificaDisponibilita(cd);
-		
-		if(result == null)
+
+		if (result == null)
 			throw new DottoreNotFoundException("dottore non trovato");
-		
-		if(!result.isInServizio() || result.isInVisita())
-			throw new DottoreNonDisponibileEsception("dottore non disponibile");
-		
+
+		if (!result.inServizio() || result.inVisita())
+			throw new DottoreNonDisponibileException("dottore non disponibile");
+
 		return DottoreDTO.buildDottoreDTOFromModel(result);
 	}
-	
+
 	@PostMapping("/impostaVisita")
 	public DottorePazienteDTO impostaVisita(@RequestBody DottorePazienteDTO dottorePazienteDTO) {
-		
+
 		Dottore dottore = Dottore.builder().codiceDottore(dottorePazienteDTO.getCodiceDottore())
 				.codFiscalePazienteAttualmenteInVisita(dottorePazienteDTO.getCodFiscalePazienteAttualmenteInVisita())
 				.build();
-		
+
 		return DottorePazienteDTO.buildDottoreDTOFromModel(dottoreService.impostaDottore(dottore));
 	}
-	
+
 	@PostMapping("/ricovera")
 	public DottorePazienteDTO ricovera(@RequestBody DottorePazienteDTO dottorePazienteDTO) {
 		Dottore dottore = Dottore.builder().codiceDottore(dottorePazienteDTO.getCodiceDottore())
 				.codFiscalePazienteAttualmenteInVisita(dottorePazienteDTO.getCodFiscalePazienteAttualmenteInVisita())
 				.build();
-		
+
 		return DottorePazienteDTO.buildDottoreDTOFromModel(dottoreService.ricoverato(dottore));
 	}
 
