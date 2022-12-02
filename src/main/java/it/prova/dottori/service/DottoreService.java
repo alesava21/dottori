@@ -22,6 +22,8 @@ public List<Dottore> listAll();
 	
 	public Dottore verificaDisponibilita(String codiceDottore);
 	
-	public Dottore impostaDottore(Dottore dottore);
+	public Dottore impostaDottore(Dottore dottore);	
+	
+	public Dottore ricoverato(Dottore dottore);
 
 }

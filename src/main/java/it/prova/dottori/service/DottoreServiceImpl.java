@@ -68,4 +68,12 @@ public class DottoreServiceImpl implements DottoreService {
 		return dottoreRepository.save(result);
 	}
 
+	@Override
+	public Dottore ricoverato(Dottore dottore) {
+		Dottore result = dottoreRepository.findBycodiceDottore(dottore.codiceDottore());
+		result.codFiscalePazienteAttualmenteInVisita(null);
+		result.inVisita(false);
+		return dottoreRepository.save(result);
+	}
+
 }
